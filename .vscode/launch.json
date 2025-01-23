@@ -1,0 +1,40 @@
+{
+    // Utilisez IntelliSense pour en savoir plus sur les attributs possibles.
+    // Pointez pour afficher la description des attributs existants.
+    // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "vscode-jest-tests.v2",
+        "runtimeExecutable": "pnpm",
+        "cwd": "${workspaceFolder}",
+        "args": [
+          "./node_modules/jest/bin/jest.js",
+          "--config",
+          "${workspaceFolder}/jest.config.mjs",
+          "--runInBand",
+          "--testTimeout=100000000",
+          "--watchAll=false",
+          "--testNamePattern",
+          "${jest.testNamePattern}",
+          "--runTestsByPath",
+          "${jest.testFile}"
+        ],
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "env": {
+          "DOTENV_CONFIG_PATH": "./.env",
+          "NODE_OPTIONS": "--experimental-vm-modules",
+          "NODE_NO_WARNINGS": "1",
+          "NODE_ENV": "test",
+        },
+        "skipFiles": [
+          "<node_internals>/**",
+          "${workspaceFolder}/<node_internals>/**",
+          "${workspaceFolder}/node_modules/**"
+        ]
+      }
+    ]
+}

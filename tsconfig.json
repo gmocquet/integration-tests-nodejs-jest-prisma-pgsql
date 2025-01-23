@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "out",
+    "strict": true,
+    "lib": ["esnext", "dom"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["@types/jest", "@quramy/jest-prisma"],
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "prisma/**/*.ts",
+    "src/env.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "jest.*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

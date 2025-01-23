@@ -1,0 +1,65 @@
+{
+  "name": "integration-tests-nodejs-jest-prisma-pgsql",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "clear-cache": "pnpm db:stop && rimraf *.tsbuildinfo && rimraf .next/ && rimraf .swc/ && rimraf .vercel/caches/*",
+    "db:generate": "dotenv prisma generate",
+    "db:init": "dotenv prisma db push",
+    "db:init:with-db": "pnpm db:start && pnpm db:init",
+    "db:migrate:save": "dotenv prisma migrate save -- --experimental",
+    "db:migrate:up": "dotenv prisma migrate up -- --experimental",
+    "db:seed": "pnpm exec:auto-transpile ./prisma/seed.ts",
+    "db:seed:with-db": "pnpm db:init:with-db && pnpm db:seed",
+    "db:start": "docker compose up -d && pnpm db:wait:server-ready && pnpm db:wait:server-reachable",
+    "db:stop": "docker compose down",
+    "db:wait:server-reachable": "for i in {1..10000}; do if nc -z -w 5 127.0.0.1 5432 >/dev/null 2>&1; then echo 'Server reachable'; exit 0; fi; done; echo \"Failed to connect after $i attempts\"; exit 1;",
+    "db:wait:server-ready": "for i in {1..100}; do if [ \"$i\" -gt 1 ]; then pnpm db:start >/dev/null 2>&1; fi; docker compose exec db pg_isready --quiet >/dev/null 2>&1 || continue; if docker compose exec db psql --quiet --command \"SELECT 1;\" >/dev/null 2>&1; then echo 'Server ready'; exit 0; fi; done; echo 'Failed to connect to PostgreSQL after '$i' attempts' && exit 1",
+    "exec:auto-transpile": "DOTENV_CONFIG_PATH=./.env node --no-warnings --require dotenv/config --import @swc-node/register/esm-register",
+    "git:add-remote-url": "git remote add origin $GIT_REMOTE_URL && echo GIT_REMOTE_URL=$GIT_REMOTE_URL > ./.env.setup.local",
+    "git:reset-commit-history": "git pull || true && rimraf .git/ && git init && git add . && git commit -m 'first commit' && dotenv -e ./.env.setup.local -- pnpm git:add-remote-url && git push --force",
+    "install:fresh": "pnpm prune:without-node-modules && rimraf ./pnpm-lock.yaml && pnpm prune:only-node-modules && pnpm install",
+    "postinstall": "pnpm db:generate",
+    "prune": "pnpm prune:without-node-modules && pnpm prune:only-node-modules",
+    "prune:only-node-modules": "rimraf node_modules/",
+    "prune:without-node-modules": "pnpm clear-cache && pnpm store prune && rimraf tmp/",
+    "self:sort": "sort-package-json",
+    "self:upgrade": "ncu --upgrade",
+    "test": "DOTENV_CONFIG_PATH=./.env node --no-warnings --experimental-vm-modules ./node_modules/jest/bin/jest.js",
+    "test:with-db": "pnpm db:init:with-db && pnpm test"
+  },
+  "dependencies": {
+    "@prisma/client": "6.2.1"
+  },
+  "devDependencies": {
+    "@jest/globals": "29.7.0",
+    "@quramy/jest-prisma": "1.8.1",
+    "@swc-node/register": "1.10.9",
+    "@swc/core": "1.10.9",
+    "@swc/jest": "0.2.37",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.2.0",
+    "@types/jest": "29.5.14",
+    "@types/node": "22.10.9",
+    "dotenv": "16.4.7",
+    "dotenv-cli": "8.0.0",
+    "jest": "29.7.0",
+    "jest-environment-node": "29.7.0",
+    "npm-check-updates": "17.1.14",
+    "prisma": "6.2.1",
+    "rimraf": "6.0.1",
+    "sort-package-json": "2.14.0",
+    "typescript": "5.7.3"
+  },
+  "engines": {
+    "node": "22.13.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma"
+    ]
+  }
+}
